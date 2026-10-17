@@ -1,0 +1,38 @@
+name: Bug report
+description: Something doesn't work or looks wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead? Screenshots help.
+    validations:
+      required: true
+  - type: input
+    id: players
+    attributes:
+      label: Number of players
+      placeholder: e.g. 6
+    validations:
+      required: true
+  - type: input
+    id: controllers
+    attributes:
+      label: Controllers
+      placeholder: e.g. keyboard + 3 Xbox + 2 PlayStation pads
+  - type: textarea
+    id: mods
+    attributes:
+      label: Other active mods
+      placeholder: e.g. Coop Trading, DmgMeter
+  - type: input
+    id: version
+    attributes:
+      label: Mod version / Brotato version
+      placeholder: e.g. 1.2.0 / 1.1.15.4 with Abyssal Terrors
+  - type: textarea
+    id: log
+    attributes:
+      label: Log file
+      description: Attach or paste `%APPDATA%\Brotato\logs\godot.log` from right after the problem.
