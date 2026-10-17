@@ -8,7 +8,7 @@ With 1–4 players Brotato looks and plays exactly like the normal game. From th
 
 ## Install
 
-Subscribe on the Steam Workshop (link follows once it's published) and start Brotato through Steam.
+Subscribe on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3821320020) and start Brotato through Steam.
 
 ## How to play
 
@@ -36,6 +36,10 @@ Open an [issue](../../issues/new/choose) and include:
 - how many players, and which controllers;
 - your other active mods;
 - the log file `%APPDATA%\Brotato\logs\godot.log` from right after the problem.
+
+## Releasing an update
+
+Workshop ID: **3821320020**. Upload the new zip with the Godot Workshop Utility (Brotato's "modding" beta branch) and enter this ID, so the existing Workshop item is updated instead of a new one being created.
 
 ## Repository layout
 
