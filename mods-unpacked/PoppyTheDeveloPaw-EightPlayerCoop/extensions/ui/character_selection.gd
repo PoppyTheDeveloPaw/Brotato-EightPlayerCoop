@@ -2,9 +2,8 @@ extends "res://ui/menus/run/character_selection.gd"
 
 # Eight Player Coop - character selection.
 # Adds slots 5-8 (character panel, locked panel, join panel, focus emulator).
-# Up to 3 joined players the screen looks exactly like vanilla; from the 4th player
-# on, the player slots are shown as two rows of four at half size so that the
-# remaining join slots fit.
+# In co-op the player slots are always shown as two rows of four at half size, so
+# all 8 join tiles are visible from the start. Solo looks exactly like vanilla.
 
 const MP8UICS = preload("res://mods-unpacked/PoppyTheDeveloPaw-EightPlayerCoop/ui/mp8_ui.gd")
 const MP8_LARGE_SCALE: = 0.5
@@ -85,11 +84,8 @@ func _mp_build_extra_slots() -> void:
 func _mp_update_layout() -> void:
 	if _mp_rows == null:
 		return
-	# Vanilla layout up to 4 players. The 8-slot layout is used once a 5th player
-	# joins or starts joining.
-	var joined: int = RunData.get_player_count()
-	var joining: bool = not CoopService.connection_progress.empty()
-	var large: bool = RunData.is_coop_run and CoopService.get_max_players() > MP8UICS.VANILLA_PLAYERS and (joined > MP8UICS.VANILLA_PLAYERS or (joined == MP8UICS.VANILLA_PLAYERS and joining))
+	# Co-op always uses the 8-slot layout, so every join tile is visible.
+	var large: bool = RunData.is_coop_run and CoopService.get_max_players() > MP8UICS.VANILLA_PLAYERS
 	_mp_large_layout = large
 	_mp_row2.visible = large
 	for slot in _mp_slots:
@@ -114,11 +110,41 @@ func _on_connection_progress_updated(progress_values: Array) -> void:
 		for join_panel in _get_coop_join_panels():
 			if join_panel != null:
 				join_panel.update_indicators(CoopService.connected_players, progress_values)
+	_mp_update_first_join_prompt(progress_values)
 
 
 func _update_character_selection_player_count_ui() -> void:
 	._update_character_selection_player_count_ui()
 	_mp_update_layout()
+	_mp_update_first_join_prompt(CoopService.connection_progress)
+
+
+# With nobody joined yet the game shows its join prompt below the player slots.
+# In the 8-slot layout that prompt is far away from the slots, so the first slot
+# shows it instead, the same way the next free slot does once someone has joined.
+func _mp_update_first_join_prompt(progress_values: Array) -> void:
+	var waiting: bool = RunData.is_coop_run and RunData.get_player_count() == 0 and CoopService.connected_players.empty()
+	var in_first_slot: bool = waiting and _mp_large_layout
+	_coop_join_instructions.visible = waiting and not _mp_large_layout
+	var join_panels: Array = _get_coop_join_panels()
+	if join_panels.empty() or join_panels[0] == null:
+		return
+	if in_first_slot:
+		join_panels[0].instructions_visible = progress_values.empty()
+	elif waiting:
+		join_panels[0].instructions_visible = false
+
+
+# The co-op toggle keeps the real keyboard / controller focus after it has been
+# switched on. Players join by pressing the accept button, so once someone has
+# joined, a press on another controller would also reach the toggle and switch
+# co-op off again (removing everyone who joined). From the first join on the
+# toggle lets go of that focus; player 1 still reaches it with their own cursor.
+func _input(_event: InputEvent) -> void:
+	if not RunData.is_coop_run or RunData.get_player_count() == 0:
+		return
+	if _coop_button != null and get_focus_owner() == _coop_button:
+		_coop_button.release_focus()
 
 
 func _get_coop_join_panels() -> Array:
