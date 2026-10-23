@@ -1,7 +1,7 @@
 {
 	"name": "EightPlayerCoop",
 	"namespace": "PoppyTheDeveloPaw",
-	"version_number": "1.2.1",
+	"version_number": "1.2.2",
 	"description": "Local co-op for up to 8 players on one PC. Every co-op screen (character and weapon selection, HUD, level-ups, shop, pause menu, end of run) gets a layout for 5-8 players; with 1-4 players the game looks exactly like vanilla.",
 	"website_url": "https://github.com/PoppyTheDeveloPaw/Brotato-EightPlayerCoop",
 	"dependencies": [],

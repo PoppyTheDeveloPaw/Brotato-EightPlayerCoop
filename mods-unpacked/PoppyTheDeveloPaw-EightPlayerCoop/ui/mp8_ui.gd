@@ -21,6 +21,7 @@ static func clone(source: Node, new_name: String, scene_root: Node, rename_from:
 
 	var mapping: = {}
 	_map_tree(source, copy, mapping)
+	_restore_lost_properties(mapping)
 	# Owners inside the copy first, so the copy's own %UniqueName lookups work
 	# when it becomes ready (which can happen right in add_child below).
 	_adopt(source, mapping, scene_root, true)
@@ -36,6 +37,35 @@ static func clone(source: Node, new_name: String, scene_root: Node, rename_from:
 
 	_adopt(source, mapping, scene_root, false)
 	return copy
+
+
+# Duplicating a scene does not keep every setting of the nodes inside instanced
+# sub-scenes: some fall back to their class default (for example a label-like
+# Button inside a shop item became selectable again). Copy back every plain
+# setting that differs from the original.
+static func _restore_lost_properties(mapping: Dictionary) -> void:
+	var log_changes: bool = File.new().file_exists("user://mp8_dev.txt")
+	var changed: = {}
+	for source in mapping:
+		var copy: Node = mapping[source]
+		if copy.get_class() != source.get_class() or copy.get_script() != source.get_script():
+			continue
+		for property in source.get_property_list():
+			if not property.usage & PROPERTY_USAGE_STORAGE:
+				continue
+			var name: String = property.name
+			if name == "script" or name == "name" or name == "owner":
+				continue
+			var value = source.get(name)
+			if value is Object or value is Array or value is Dictionary:
+				continue
+			if typeof(copy.get(name)) == typeof(value) and copy.get(name) == value:
+				continue
+			copy.set(name, value)
+			if log_changes:
+				changed[name] = changed.get(name, 0) + 1
+	if log_changes and not changed.empty():
+		ModLoaderLog.info("clone restored %s" % [changed], "PoppyTheDeveloPaw-EightPlayerCoop:UI")
 
 
 static func _rename_tree(node: Node, from: String, to: String) -> void:

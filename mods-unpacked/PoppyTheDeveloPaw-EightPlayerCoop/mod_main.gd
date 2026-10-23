@@ -22,6 +22,8 @@ const EXTENSIONS: = [
 	"extensions/main.gd",
 	"extensions/global/entity_spawner.gd",
 	"extensions/global/stats_manager.gd",
+	"extensions/ui/focus_emulator.gd",
+	"extensions/ui/player_gear_container.gd",
 	"extensions/ui/stat_popup.gd",
 	"extensions/ui/coop_item_popup.gd",
 	"extensions/ui/popup_manager.gd",
